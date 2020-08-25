@@ -106,6 +106,7 @@ include("uilang.php");
 			<div class="section">
 				<div class="posttableblock">
 					<div class="postcontent">
+					
 						<?php
 						$postid = mysqli_real_escape_string($connection, $_GET["post"]);
 						if($postid != ""){
@@ -117,10 +118,13 @@ include("uilang.php");
 								$row = mysqli_fetch_assoc($result);
 								
 								$picture = $row["picture"];
+								$picturefile = $row["picture"];
 								
 								if($picture != ""){
+									$picturefile = "pictures/" . $picture;
 									$picture = $baseurl . "pictures/" . $picture;
 								}else{
+									$picturefile = "images/defaultimg.jpg";
 									$picture = $baseurl . "images/defaultimg.jpg";
 								}
 								
@@ -178,6 +182,7 @@ include("uilang.php");
 							}
 						}
 						?>
+						
 					</div>
 					<div class="randomvids">
 						<div class="randomvidblock orderblock">
@@ -192,40 +197,42 @@ include("uilang.php");
 								<script>
 									var moptions = JSON.parse($("#productoptions").html())
 									var productoptions = "<label>" + moptions[0].title + "</label>" 
-									productoptions += "<select id='productoptionsselect' onchange='overrideprice()'>"
+									productoptions += "<select id='productoptionsselect' onchange='overridethisprice()'>"
 									for(var i = 0; i < moptions[0].options.length; i++){
 										productoptions += "<option value=" +moptions[0].options[i].price+ ">" + moptions[0].options[i].title + "</option>"
 									}
 									productoptions += "</select>"
 									$("#productoptions").html(productoptions).show()
 									setTimeout(function(){
-										overrideprice()
+										overridethisprice()
 									}, 1000)
 								</script>
 								<?php
 							}
 							?>
 							
+							<!--
 							<label><i class="fa fa-file-text-o"></i> <?php echo uilang("Notes") ?></label>
 							<textarea id="ordernotes" placeholder="<?php echo uilang("Write some notes...") ?>" style="border-radius: 0px;"></textarea>
+							-->
 							<p id="currenttotal" style="font-size: 30px;">Rp. 12345</p>
-							<div class="buybutton" onclick="addtocart()"><i class="fa fa-shopping-cart"></i> <?php echo uilang("Add to Cart") ?></div>
+							<div class="buybutton" onclick="addthisonetocart()"><i class="fa fa-shopping-cart"></i> <?php echo uilang("Add to Cart") ?></div>
 							
 							<script>
 								var currentprice = <?php echo $saleprice ?>;
 								var currentTotal = 0
 								var currentitem = {
-									price : currentprice,
+									id : 0,
 									title : "<?php echo $row["title"] ?>",
+									price : currentprice,
 									quantity : 0,
-									options : "",
-									subtotal : 0,
+									image : "<?php echo $picturefile ?>",
 									notes : "",
 								}
 								
-								function overrideprice(){
-									currentprice = $("#productoptionsselect").val()
-									currentitem.options = $("#productoptionsselect option:selected").text()
+								function overridethisprice(){
+									currentitem.price = $("#productoptionsselect").val()
+									currentitem.title = "<?php echo $row["title"] ?> - " + $("#productoptionsselect option:selected").text()
 									updateCurrentTotal()
 								}
 								
@@ -238,22 +245,35 @@ include("uilang.php");
 										currentQ = 1
 										currentTotal = currentQ * currentprice
 									}
-									currentitem.quantity = currentQ
+									currentitem.quantity = parseInt(currentQ)
 									$("#currenttotal").html("<?php echo $currencysymbol ?> " + tSep(currentTotal.toFixed(2)))
 								}
 								updateCurrentTotal()
 								
-								function addtocart(){
+								function addthisonetocart(){
 									currentitem.notes = $("#ordernotes").val()
-									currentitem.subtotal = currentTotal
-									appdata.orderitems.push(currentitem)
-									savedata()
-									reloadcartdata()
-									loaddata()
-									$([document.documentElement, document.body]).animate({
-										scrollTop: $(".shoppingcart").offset().top
-									}, 1000);
+									
+									if(cartobject.length == 0){
+										cartobject.push(currentitem)
+										updatecartcount()
+										savedata()
+									}else{
+										for(var i = 0; i < cartobject.length; i++){
+											if(cartobject[i].title == currentitem.title && cartobject[i].price == currentitem.price){
+												cartobject[i].quantity += currentitem.quantity
+												updatecartcount()
+												savedata()
+												return
+											}
+										}
+										cartobject.push(currentitem)
+										updatecartcount()
+										savedata()
+										return
+									}	
+
 								}
+								
 							</script>
 							
 						</div>
@@ -273,8 +293,7 @@ include("uilang.php");
 											$imagefile = "images/defaultimg.jpg";
 										}else{
 											$imagefile = "pictures/" . $imagefile;
-										}
-										
+										}										
 
 										$saleprice = $row["normalprice"];
 										$oldprice = "";
@@ -282,7 +301,6 @@ include("uilang.php");
 											$saleprice = $row["discountprice"];
 											$oldprice = "<span style='margin: 0px; margin-top: 20px; text-decoration: line-through; font-size: 12px; margin-right: 10px; color: gray;'>" . $currencysymbol . number_format($row["normalprice"],2) . "</span>";
 										}
-
 										
 										?>
 										<div class="lilimage" style="background: url(<?php echo $baseurl . $imagefile ?>) no-repeat center center; background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover;"></div>
@@ -391,7 +409,7 @@ include("uilang.php");
 		?>
 		
 		<div id="cartbutton">
-			<div style="width: 96px; height: 96px; border-radius: 50%; background-color: white; text-align: center; display: table-cell; vertical-align: middle; border: 2px solid <?php echo $maincolor ?>; position: relative;">
+			<div style="-webkit-box-shadow: 0px 0px 15px 0px rgba(0,0,0,0.35); -moz-box-shadow: 0px 0px 15px 0px rgba(0,0,0,0.35); box-shadow: 0px 0px 15px 0px rgba(0,0,0,0.35); width: 96px; height: 96px; border-radius: 50%; background-color: white; text-align: center; display: table-cell; vertical-align: middle; border: 2px solid <?php echo $maincolor ?>; position: relative;">
 				<div style="position: absolute; top: 0; text-align: center; font-size: 20px; left: 0; right: 0; padding: 5px; font-weight: bold;" id="cartcount"></div>
 				<i class="fa fa-shopping-cart" style="cursor: pointer;" onclick="showcartui()"></i>
 			</div>
@@ -493,10 +511,6 @@ include("uilang.php");
 			
 			function addtocart(n){
 				
-				$("#cartbutton").fadeOut(100, function(){
-					$("#cartbutton").fadeIn()
-				})
-				
 				var prod = $(".filmblock").eq(n)
 				var prodop = prod.find(".currentproductoption"+n+" option:selected").text()
 				if(prodop != "")
@@ -513,6 +527,7 @@ include("uilang.php");
 						price : prodprice,
 						quantity : prodquantity,
 						image : prodimage,
+						notes : "",
 					})
 					updatecartcount()
 					savedata()
@@ -535,13 +550,17 @@ include("uilang.php");
 			}
 			
 			function updatecartcount(){
+				$("#cartbutton").fadeOut(100, function(){
+					$("#cartbutton").fadeIn()
+				})
 				$("#cartcount").html(cartobject.length)
 			}
 			
 			var ordermessage = ""
 			
 			function showcartui(){
-				ordermessage = "ORDER ID:" + Math.floor(Math.random() * 9999) + 1000 + "\n"
+				var today = new Date()
+				ordermessage = "ORDER ID: " + Math.floor(Math.random() * 9999) + 1000 + "\nDATE: " +today+ "\n"
 				var cartdata = ""
 				var grandtotal = 0
 				for(var i = 0; i < cartobject.length; i++){
@@ -549,16 +568,17 @@ include("uilang.php");
 					cartdata += "<div style='margin-bottom: 20px;'><img src='<?php echo $baseurl ?>"+cartobject[i].image+"' style='display: inline-block; vertical-align: middle; max-width: 64px; border-radius: 10px;'> "+cartobject[i].title + " <?php echo $currencysymbol ?>" + tSep(parseInt(cartobject[i].price).toFixed(2)) + " x <input id='cartq"+i+"' onchange='modifycq("+i+")' class='productquantity' type='number' value=" + cartobject[i].quantity + " min=1 style='vertical-align: middle; display: inline-block; width: 40px; padding: 2px; margin: 5px; border-radius: 0px;'> = <?php echo $currencysymbol ?>" + tSep(tmpttl.toFixed(2)) + "</div>"
 					grandtotal += tmpttl
 					
-					ordermessage += cartobject[i].title + " x " + cartobject[i].quantity + " = " + tmpttl + "\n"
+					ordermessage += "- " + cartobject[i].title + " x " + cartobject[i].quantity + " = " + tmpttl + "\n"
 				}
 				
 				ordermessage += "<?php echo uilang("Total") ?> = " + grandtotal + "\n"
 				
 				cartdata += "<hr style='background-color: white;'><h1><?php echo uilang("Total") ?> = <?php echo $currencysymbol ?>" + tSep(grandtotal.toFixed(2)) + "</h1>"
 				cartdata += "<h3><?php echo uilang("Contact Information") ?></h3><label><?php echo uilang("Name") ?></label><input id='cdname' placeholder='<?php echo uilang("Name") ?>'>"
-				cartdata += "<label><?php echo uilang("Mobile") ?></label><input id='cdmobile' placeholder='<?php echo uilang("Mobile") ?>'>"
+				cartdata += "<label><?php echo uilang("Mobile") ?></label><input id='cdmobile' type='number' placeholder='<?php echo uilang("Mobile") ?>'>"
 				cartdata += "<label><?php echo uilang("Address") ?></label><input id='cdaddress' placeholder='<?php echo uilang("Address") ?>'>"
 				cartdata += "<label><?php echo uilang("Delivery Method") ?></label><select id='cdmethod'><?php echo uilang("Delivery Method") ?><option>Take Away</option><option>Home Delivery</option><option>Dining</option></select>"
+				cartdata += "<label><?php echo uilang("Order Notes") ?></label><textarea id='cartordernotes' placeholder='<?php echo uilang("Order Notes") ?>'></textarea>"
 				cartdata += "<div style='text-align: center;'><div class='buybutton' onclick='hidecartui()'><i class='fa fa-arrow-left'></i> Back to Shop</div><div class='buybutton' onclick='clearcart()'><i class='fa fa-times'></i> Clear Cart</div><div class='buybutton' onclick='chatnow()'><i class='fa fa-whatsapp'></i> Order on WhatsApp</div></div>"
 				$("#cartdata").html(cartdata)
 				$("#cartui").fadeIn()
@@ -575,6 +595,7 @@ include("uilang.php");
 			function clearcart(){
 				cartobject = []
 				showcartui()
+				updatecartcount()
 			}
 			
 			function modifycq(n){
@@ -588,7 +609,7 @@ include("uilang.php");
 				var cdmobile = $("#cdmobile").val()
 				var cdaddress = $("#cdaddress").val()
 				var cdmethod = $("#cdmethod").val()
-				ordermessage += cdname + "\n" + cdmobile + "\n" + cdaddress + "\n" + cdmethod + "\n" 
+				ordermessage += "<?php echo uilang("Name") ?>: " + cdname + "\n<?php echo uilang("Mobile") ?>: " + cdmobile + "\n<?php echo uilang("Address") ?>: " + cdaddress + "\<?php echo uilang("Delivery Method") ?>n: " + cdmethod + "\n" + "ORDER NOTES: " + $("#cartordernotes").val()
 				$.post("<?php echo $baseurl ?>ordernotes.php", {
 					"message" : ordermessage
 				}, function(data){
