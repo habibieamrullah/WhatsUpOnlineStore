@@ -11,6 +11,7 @@ if(isset($_POST["editposttitle"]) && isset($_POST["id"])){
 	$discountprice = mysqli_real_escape_string($connection, $_POST["editdiscountprice"]);
 	$content = mysqli_real_escape_string($connection, $_POST["editpostcontent"]);
 	$moreoptions = mysqli_real_escape_string($connection, $_POST["moreoptions"]);
+	$moreimages = mysqli_real_escape_string($connection, $_POST["moreimagesinput"]);
 	
 	if($posttitle != "" && $content != ""){
 		

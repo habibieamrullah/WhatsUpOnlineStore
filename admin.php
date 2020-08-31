@@ -595,8 +595,15 @@ include("uilang.php");
 											<label><i class="fa fa-file"></i> <?php echo uilang("Content") ?></label>
 											<textarea name="editpostcontent" style="height: 250px;"><?php echo $row["content"] ?></textarea>
 											<br><br>
+											
 											<label><i class="fa fa-image"></i> <?php echo uilang("Image File") ?></label>
 											<input class="fileinput" name="newpicture" type="file" accept="image/jpeg, image/png">
+											
+											<label><i class="fa fa-image"></i> <?php echo uilang("Additional Images") ?></label>
+											<div id="moreimagesvisual"></div>
+											<input id="moreimagesinput" name="moreimagesinput" value="<?php echo $row["moreimages"] ?>">
+											<div class="buybutton" onclick="showimagepicker()"><i class="fa fa-plus"></i> <?php echo uilang("Add") ?></div>
+											<br><br>
 											
 											<label><i class="fa fa-check-square-o"></i> <?php echo uilang("Add more options") ?></label>
 											<input id="moreoptions" name="moreoptions" value='<?php echo $row["options"] ?>' style="display: none;">
@@ -628,8 +635,10 @@ include("uilang.php");
 										
 										<script>
 											setTimeout(function(){
-												moptions = JSON.parse($("#moreoptions").val())
-												updatemovisual()
+												if($("#moreoptions").val() != ""){
+													moptions = JSON.parse($("#moreoptions").val())
+													updatemovisual()
+												}
 											}, 1000)
 										</script>
 									</div>
@@ -794,8 +803,17 @@ include("uilang.php");
 					}
 					
 					function insertthis(img){
-						$("#moreimagesvisual").append("<div class='imgitem' style='display: inline-block; vertical-align: top;'><div class='imgitemdata' style='display: none'>"+img+"</div><img src='" + img + "' style='height: 64px; margin: 10px; border-radius: 5px; cursor: not-allowed;'></div>")
+						var randata = Math.ceil(Math.random()*10000)
+						$("#moreimagesvisual").append("<div class='imgitem' style='display: inline-block; vertical-align: top;' onclick=removethis('" +randata+ "')><div class='imgitemdatarand' style='display: none'>"+randata+"</div><div class='imgitemdata' style='display: none'>"+img+"</div><img src='" + img + "' style='height: 64px; margin: 10px; border-radius: 5px; cursor: not-allowed;'></div>")
 						closeimagepicker()
+						ipvisualtodata()
+					}
+					
+					function removethis(randata){
+						for(var i = 0; i < $(".imgitem").length; i++){
+							if($(".imgitemdatarand").eq(i).text() == randata)
+								$(".imgitem").eq(i).remove()
+						}
 						ipvisualtodata()
 					}
 					

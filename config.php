@@ -52,8 +52,9 @@ discountprice INT(6) NOT NULL,
 title VARCHAR(300) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
 time VARCHAR(150) NOT NULL,
 options VARCHAR(200) NOT NULL,
-picture VARCHAR(150) NOT NULL,
-content VARCHAR(1000) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL
+picture VARCHAR(300) NOT NULL,
+moreimages TEXT NOT NULL,
+content TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL
 )");
 
 //Creating tables - categories
