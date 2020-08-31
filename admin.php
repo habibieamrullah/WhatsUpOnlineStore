@@ -138,7 +138,7 @@ include("uilang.php");
 										
 										<label><i class="fa fa-image"></i> <?php echo uilang("Additional Images") ?></label>
 										<div id="moreimagesvisual"></div>
-										<input id="moreimagesinput" name="moreimagesinput">
+										<input id="moreimagesinput" name="moreimagesinput" style="display: none;">
 										<div class="buybutton" onclick="showimagepicker()"><i class="fa fa-plus"></i> <?php echo uilang("Add") ?></div>
 										<br><br>
 										
@@ -354,8 +354,8 @@ include("uilang.php");
 									</form>
 									<?php
 								}
-
 							}
+							
 							//settings
 							else if(isset($_GET["settings"])){
 								?>
@@ -545,6 +545,7 @@ include("uilang.php");
 								</form>
 								<?php
 							}
+							
 							//edit post
 							else if(isset($_GET["editpost"])){
 								
@@ -601,7 +602,7 @@ include("uilang.php");
 											
 											<label><i class="fa fa-image"></i> <?php echo uilang("Additional Images") ?></label>
 											<div id="moreimagesvisual"></div>
-											<input id="moreimagesinput" name="moreimagesinput" value="<?php echo $row["moreimages"] ?>">
+											<input id="moreimagesinput" name="moreimagesinput" value="<?php echo $row["moreimages"] ?>" style="display: none;">
 											<div class="buybutton" onclick="showimagepicker()"><i class="fa fa-plus"></i> <?php echo uilang("Add") ?></div>
 											<br><br>
 											
@@ -638,6 +639,10 @@ include("uilang.php");
 												if($("#moreoptions").val() != ""){
 													moptions = JSON.parse($("#moreoptions").val())
 													updatemovisual()
+												}
+												
+												if($("#moreimagesinput").val() != ""){
+													ipdatatovisual()
 												}
 											}, 1000)
 										</script>
@@ -823,6 +828,16 @@ include("uilang.php");
 							data += $(".imgitemdata").eq(i).text() + ",";
 						}
 						$("#moreimagesinput").val(data)
+					}
+					
+					function ipdatatovisual(){
+						var data = $("#moreimagesinput").val()
+						data = data.split(",")
+						for(var i = 0; i < data.length; i++){
+							if(data[i] != ""){
+								insertthis(data[i])
+							}
+						}
 					}
 					
 					function closeimagepicker(){

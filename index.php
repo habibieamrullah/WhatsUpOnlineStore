@@ -1,4 +1,5 @@
 <?php
+
 /*
 Developed by Habibie
 Email: habibieamrullah@gmail.com 
@@ -570,15 +571,18 @@ include("uilang.php");
 			}
 			
 			function updatecartcount(){
+				
 				$("#cartbutton").fadeOut(100, function(){
 					$("#cartbutton").fadeIn()
 				})
 				$("#cartcount").html(cartobject.length)
+				
 			}
 			
 			var ordermessage = ""
 			
 			function showcartui(){
+				
 				var today = new Date()
 				ordermessage = "ORDER ID: " + Math.floor(Math.random() * 9999) + 1000 + "\nDATE: " +today+ "\n"
 				var cartdata = ""
