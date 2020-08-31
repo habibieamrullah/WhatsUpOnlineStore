@@ -87,7 +87,7 @@ include("uilang.php");
 							<i class="fa fa-search"></i>
 						</div>
 						<div style="display: table-cell">
-							<input onkeyup="quicksearch()" id="quicksearch" placeholder="<?php echo uilang("Search") ?>..." style="border: none; background-color: inherit; outline: none; margin: 0px; padding: 10px;">
+							<input <?php if(isset($_GET["post"])){ ?> onkeyup="searchonhomepage()" <?php } else { ?> onkeyup="quicksearch()" <?php } ?> id="quicksearch" placeholder="<?php echo uilang("Search") ?>..." style="border: none; background-color: inherit; outline: none; margin: 0px; padding: 10px;">
 						</div>
 						<div style="display: table-cell; width: 50px; text-align: center; cursor: pointer;" onclick="clearSearchInput()">
 							<i class="fa fa-times-circle"></i>
@@ -133,40 +133,52 @@ include("uilang.php");
 								$postdate = date("d-m-Y", $seconds);
 								?>
 								
-								<div id="productpic" style="background: url(<?php echo $picture ?>) no-repeat center center; background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover;"></div>
-								
-								<?php
-								$saleprice = $row["normalprice"];
-								$oldprice = "";
-								if($row["discountprice"] != 0){
-									$saleprice = $row["discountprice"];
-									$oldprice = "<span style='margin: 0px; margin-top: 20px; text-decoration: line-through; font-size: 20px; margin-right: 10px; color: gray;'>" . $currencysymbol . number_format($row["normalprice"],2) . "</span>";
-								}
-								?>
-								
-								<h1><?php echo $row["title"] ?> <i class="fa fa-angle-double-right"></i> <?php echo $oldprice . $currencysymbol . number_format($saleprice,2) ?></h1>
-								
-								<div>
-									<?php echo $row["content"] ?>
-								</div>
-								
-								<!-- Social Share Buttons-->
-								<div style="font-size: 12px;">
-									<?php
-									showSharer($baseurl . "?post/" . $row["postid"], $websitetitle);
-									?>
-								</div>
-								<br><br>
-								
-								<!-- Facebook Comments Plugin -->
-								<div style="width: 100%; box-sizing: border-box; background-color: white; border-radius: 20px; padding: 14px;">
-									<div id="fb-root"></div>
-									<script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&amp;version=v5.0&amp;appId=569420283509636&amp;autoLogAppEvents=1"></script>
-									 
-									<div class="fb-comments" data-href="<?php echo $baseurl ?>?post/<?php echo $row["postid"] ?>" data-width="100%"  data-numposts="14"></div>
-									
-								</div>
-								
+								<div style="display: table; width: 100%;">
+									<div class="producthalfbox leftphb">
+										<!--
+										<div id="productpic" style="background-image: url(<?php echo $picture ?>); background-attachment: fill; background-position: center; background-repeat: no-repeat; background-size: auto 100%;"></div>
+										-->
+										<div>
+											<img src="<?php echo $picture ?>" style="cursor: pointer; width: 100%; border-radius: 5px;" onclick="showimage('pictures/<?php echo $row["picture"] ?>')">
+										</div>
+										<div id="moreimages"></div>
+									</div>
+									<div class="producthalfbox">
+										
+										<?php
+										$saleprice = $row["normalprice"];
+										$oldprice = "";
+										if($row["discountprice"] != 0){
+											$saleprice = $row["discountprice"];
+											$oldprice = "<span style='margin: 0px; margin-top: 20px; text-decoration: line-through; font-size: 20px; margin-right: 10px; color: gray;'>" . $currencysymbol . number_format($row["normalprice"],2) . "</span>";
+										}
+										?>
+										
+										<h1><?php echo $row["title"] ?> <i class="fa fa-angle-double-right"></i> <?php echo $oldprice . $currencysymbol . number_format($saleprice,2) ?></h1>
+										
+										<div>
+											<?php echo $row["content"] ?>
+										</div>
+										
+										<!-- Social Share Buttons-->
+										<div style="font-size: 12px;">
+											<?php
+											showSharer($baseurl . "?post/" . $row["postid"], $websitetitle);
+											?>
+										</div>
+										<br><br>
+										
+										<!-- Facebook Comments Plugin -->
+										<div style="width: 100%; box-sizing: border-box; background-color: white; border-radius: 20px; padding: 14px;">
+											<div id="fb-root"></div>
+											<script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&amp;version=v5.0&amp;appId=569420283509636&amp;autoLogAppEvents=1"></script>
+											 
+											<div class="fb-comments" data-href="<?php echo $baseurl ?>?post/<?php echo $row["postid"] ?>" data-width="100%"  data-numposts="14"></div>
+											
+										</div>
+										
+									</div>
+								</div>								
 								
 								<script>
 									function viewedThis(postid){
@@ -188,7 +200,7 @@ include("uilang.php");
 						<div class="randomvidblock orderblock">
 							<h2><?php echo uilang("Order") ?></h2>
 							<label><i class="fa fa-plus"></i> <?php echo uilang("Quantity") ?></label>
-							<input id="currentQ" type="number" value=1 onchange="updateCurrentTotal()" style="border-radius: 0px;">
+							<input id="currentQ" type="number" value=1 onchange="updateCurrentTotal()" min=1 style="border-radius: 0px;">
 							
 							<?php
 							if($row["options"] != ""){
@@ -231,12 +243,14 @@ include("uilang.php");
 								}
 								
 								function overridethisprice(){
-									currentitem.price = $("#productoptionsselect").val()
+									currentprice = parseInt($("#productoptionsselect").val())
+									currentitem.price = parseInt($("#productoptionsselect").val())
 									currentitem.title = "<?php echo $row["title"] ?> - " + $("#productoptionsselect option:selected").text()
 									updateCurrentTotal()
 								}
 								
 								function updateCurrentTotal(){
+									
 									var currentQ = $("#currentQ").val()
 									if(currentQ > 0){
 										currentTotal = currentQ * currentprice
@@ -245,6 +259,7 @@ include("uilang.php");
 										currentQ = 1
 										currentTotal = currentQ * currentprice
 									}
+									
 									currentitem.quantity = parseInt(currentQ)
 									$("#currenttotal").html("<?php echo $currencysymbol ?> " + tSep(currentTotal.toFixed(2)))
 								}
@@ -373,7 +388,11 @@ include("uilang.php");
 							<div class="filmblock">
 								<div class="categoryname" style="display: none;"><?php echo $currentcategory ?></div>
 								<a href="<?php echo $baseurl ?>?post=<?php echo $row["postid"] ?>">
+									<!--
 									<div class="productthumbnail" style="cursor: pointer; background: url(<?php echo $baseurl . $imagefile ?>) no-repeat center center; background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover;">
+									-->
+									
+									<div class="productthumbnail" style="cursor: pointer; background-image: url(<?php echo $baseurl . $imagefile ?>); background-attachment: fill; background-position: center; background-repeat: no-repeat; background-size: auto 100%;">
 									</div>
 								</a>
 								<div class="prodimage" style="display: none;"><?php echo $imagefile ?></div>
@@ -539,6 +558,7 @@ include("uilang.php");
 					for(var i = 0; i < cartobject.length; i++){
 						if(cartobject[i].title == prodtitle && cartobject[i].price == prodprice){
 							cartobject[i].quantity += prodquantity
+							updatecartcount()
 							savedata()
 							return
 						}
@@ -635,6 +655,26 @@ include("uilang.php");
 				quicksearch()
 			}
 			
+			var postsearchinterval
+			function searchonhomepage(){
+				clearInterval(postsearchinterval)
+				postsearchinterval = setTimeout(function(){
+					var qstring = $("#quicksearch").val()
+					if(qstring != "")
+						location.href = "<?php echo $baseurl ?>#search=" + qstring
+				}, 2000)
+			}
+			
+			try{
+				if(location.href.split("#")[1].split("=")[0] == "search"){
+					if(location.href.split("#")[1].split("=")[1] != ""){
+						$("#quicksearch").val(location.href.split("#")[1].split("=")[1])
+						quicksearch()
+					}
+				}
+			}catch(e){
+				console.log(e)
+			}
 		</script>
 	</body>
 </html>

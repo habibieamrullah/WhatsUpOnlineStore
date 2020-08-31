@@ -570,6 +570,30 @@
 		width: 200px;
 	}
 	
+	.producthalfbox{
+		display: table-cell;
+		vertical-align: top;
+	}
+	
+	.leftphb{
+		width: 256px;
+		padding-right: 10px;
+	}
+	
+	#imagepickerui{
+		position: fixed;
+		top: 0;
+		left: 0; 
+		right: 0;
+		bottom: 0;
+		background-color: rgba(0,0,0,.75);
+		padding: 50px;
+		color: white;
+		
+		backdrop-filter: blur(5px);
+		-webkit-backdrop-filter: blur(5px);
+	}
+	
 	/* mobile view */
 	@media (max-width: 800px){
 		
@@ -652,7 +676,7 @@
 		}
 		
 		.randomvidblock:hover{
-			background-color: black;
+			background-color: white;
 			transition: background-color .5s;
 		}
 		
@@ -668,6 +692,14 @@
 		
 		#webvideo{
 			height: 256px;
+		}
+		
+		.producthalfbox{
+			display: block;
+		}
+		
+		.leftphb{
+			width: 100%;
 		}
 		
 	}

@@ -91,6 +91,7 @@ include("uilang.php");
 								</div>
 								<a href="<?php echo $baseurl ?>admin.php"><div class="adminleftbaritem"><i class="fa fa-home" style="width: 30px;"></i> <?php echo uilang("Home") ?></div></a>
 								<a href="<?php echo $baseurl ?>admin.php?newpost"><div class="adminleftbaritem"><i class="fa fa-plus" style="width: 30px;"></i> <?php echo uilang("New Post") ?></div></a>
+								<a href="<?php echo $baseurl ?>admin.php?pictures"><div class="adminleftbaritem"><i class="fa fa-image" style="width: 30px;"></i> <?php echo uilang("Pictures") ?></div></a>
 								<a href="<?php echo $baseurl ?>admin.php?categories"><div class="adminleftbaritem"><i class="fa fa-tag" style="width: 30px;"></i> <?php echo uilang("Categories") ?></div></a>
 								<a href="<?php echo $baseurl ?>admin.php?orders"><div class="adminleftbaritem"><i class="fa fa-file-text" style="width: 30px;"></i> <?php echo uilang("Orders") ?></div></a>
 								<a href="<?php echo $baseurl ?>admin.php?settings"><div class="adminleftbaritem"><i class="fa fa-cogs" style="width: 30px;"></i> <?php echo uilang("Settings") ?></div></a>
@@ -131,8 +132,15 @@ include("uilang.php");
 										<label><i class="fa fa-file"></i> <?php echo uilang("Content") ?></label>
 										<textarea name="newpostcontent" style="height: 250px;"></textarea>
 										<br><br>
+										
 										<label><i class="fa fa-image"></i> <?php echo uilang("Image File") ?></label>
 										<input class="fileinput" name="newpicture" type="file" accept="image/jpeg, image/png">
+										
+										<label><i class="fa fa-image"></i> <?php echo uilang("Additional Images") ?></label>
+										<div id="moreimagesvisual"></div>
+										<input id="moreimagesinput" name="moreimagesinput">
+										<div class="buybutton" onclick="showimagepicker()"><i class="fa fa-plus"></i> <?php echo uilang("Add") ?></div>
+										<br><br>
 										
 										<label><i class="fa fa-check-square-o"></i> <?php echo uilang("Add more options") ?></label>
 										<input id="moreoptions" name="moreoptions" style="display: none">
@@ -201,6 +209,86 @@ include("uilang.php");
 								</script>
 								<?php
 							
+							}
+							//pictures
+							else if(isset($_GET["pictures"])){
+								?>
+								<h1><?php echo uilang("Pictures") ?></h1>
+								<?php
+								
+								if(isset($_GET["delete"])){
+									if(file_exists("pictures/" . $_GET["delete"])){
+										unlink("pictures/" . $_GET["delete"]);
+										echo "<div class='alert'>" . uilang("A picture has been deleted.") . "</div>";
+									}
+								}
+								
+								if(isset($_POST["submitmorepictures"])){
+									
+									include("thumbnailgenerator.php");
+									
+									$files = array_filter($_FILES['newmorepicture']['name']);
+									$total = count($files);
+									
+									$hasfile = false;
+
+									// Loop through each file
+									for( $i=0 ; $i < $total ; $i++ ) {
+
+										//Get the temp file path
+										$tmpFilePath = $_FILES['newmorepicture']['tmp_name'][$i];
+
+										//Make sure we have a file path
+										if ($tmpFilePath != ""){
+										  
+										  
+											$maxsize = 524288;
+											
+											$extsAllowed = array( 'jpg', 'jpeg', 'png' );
+											$uploadedfile = $_FILES['newmorepicture']['name'][$i];
+											$extension = pathinfo($uploadedfile, PATHINFO_EXTENSION);
+											if (in_array($extension, $extsAllowed) ) { 
+												$newpicture = substr(str_shuffle(str_repeat("0123456789abcdefghijklmnopqrstuvwxyz", 5)), 0, 10);
+												$name = "pictures/" . $newpicture .".". $extension;
+												
+												if(($_FILES['newmorepicture']['size'][$i] >= $maxsize)){
+													createThumbnail($_FILES['newmorepicture']['tmp_name'][$i], "pictures/" . $newpicture .".". $extension, 512);
+												}else{
+													$result = move_uploaded_file($_FILES['newmorepicture']['tmp_name'][$i], $name);
+												}
+												
+												$hasfile = true;
+											}
+										}
+									}
+									if($hasfile)
+										echo "<div class='alert'>" . uilang("More picture(s) has been added.") . "</div>";
+								}
+								
+								
+								$dirpath = "pictures/*";
+								$files = array();
+								$files = glob($dirpath);
+								usort($files, function($x, $y) {
+									return filemtime($x) < filemtime($y);
+								});
+								
+								foreach($files as $item){
+									echo "<div style='display: inline-block; vertical-align: top; text-align: center;'>";
+									echo "<div><img src='" .$baseurl. "/" . $item . "' height='128px' style='margin: 5px; border-radius: 5px; cursor: pointer;' onclick=showimage('" . $item . "')></div>";
+									echo "<a class='textlink' href='?pictures&delete=" . explode("/", $item)[1] . "'><i class='fa fa-trash'></i> " . uilang("Delete") . "</a></div>";
+								}
+								
+								?>
+								<div style="margin-top: 50px">
+									<form method="post" enctype="multipart/form-data">
+										<label><i class="fa fa-image"></i> <?php echo uilang("Add more picture") ?></label>
+										<input class="fileinput" name="newmorepicture[]" type="file" accept="image/jpeg, image/png" multiple="multiple">
+										<input name = "submitmorepictures" type="submit" value="<?php echo uilang("Submit") ?>" class="submitbutton">
+									</form>
+								</div>
+								<?php
+								
 							}
 							//categories
 							else if(isset($_GET["categories"])){
@@ -694,7 +782,44 @@ include("uilang.php");
 					</div>
 				</div>
 				
+				<div id="imagedisplayer" onclick="hideimagedisplayer()"></div>
+				
 				<script>
+				
+					function showimagepicker(){
+						$("body").append("<div id='imagepickerui'><h2 onclick='closeimagepicker()' style='cursor: pointer;'><i class='fa fa-arrow-left'></i> Back</h2><div id='imagepickercontent'>Please wait...</div>")
+						$.get("imagepicker.php", function(data){
+							$("#imagepickercontent").html(data)
+						})
+					}
+					
+					function insertthis(img){
+						$("#moreimagesvisual").append("<div class='imgitem' style='display: inline-block; vertical-align: top;'><div class='imgitemdata' style='display: none'>"+img+"</div><img src='" + img + "' style='height: 64px; margin: 10px; border-radius: 5px; cursor: not-allowed;'></div>")
+						closeimagepicker()
+						ipvisualtodata()
+					}
+					
+					function ipvisualtodata(){
+						var data = ""
+						for(var i = 0; i < $(".imgitem").length; i++){
+							data += $(".imgitemdata").eq(i).text() + ",";
+						}
+						$("#moreimagesinput").val(data)
+					}
+					
+					function closeimagepicker(){
+						$("#imagepickerui").remove()
+					}
+				
+					function showimage(img){
+						$("#imagedisplayer").html("<img src='<?php echo $baseurl ?>" +img+ "' style='height: 100%;'>").fadeIn()
+					}
+					
+					
+					function hideimagedisplayer(){
+						$("#imagedisplayer").fadeOut()
+					}
+					
 					var moptions = []
 
 					function addnewoptiontitle(){
