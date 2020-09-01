@@ -142,7 +142,20 @@ include("uilang.php");
 										<div>
 											<img src="<?php echo $picture ?>" style="cursor: pointer; width: 100%; border-radius: 5px;" onclick="showimage('pictures/<?php echo $row["picture"] ?>')">
 										</div>
-										<div id="moreimages"></div>
+										<div id="moreimages">
+											<?php
+											if($row["moreimages"] != ""){
+												$mimgs = explode(",", $row["moreimages"]);
+												for($i = 0; $i < count($mimgs); $i++){
+													if($mimgs[$i] != ""){
+														?>
+														<img src="<?php echo $baseurl . $mimgs[$i] ?>" style="height: 64px; border-radius: 5px; cursor: pointer;" onclick="showimage('<?php echo $mimgs[$i] ?>')">
+														<?php
+													}
+												}
+											}
+											?>
+										</div>
 									</div>
 									<div class="producthalfbox">
 										
@@ -349,7 +362,7 @@ include("uilang.php");
 		else{
 			?>
 			<div class="section" id="categoriesbar">
-				<div style="text-align: center;">
+				<div style="text-align: center; overflow: auto; white-space: nowrap;">
 					<?php
 					$sql = "SELECT * FROM $tablecategories ORDER BY category ASC";
 					$result = mysqli_query($connection, $sql);
@@ -363,6 +376,46 @@ include("uilang.php");
 							<?php
 						}
 					}
+					?>
+				</div>
+			</div>
+			
+			<div class="section firstthreecontainer">
+				<div id="firstthree">
+					<?php
+					$sql = "SELECT * FROM $tableposts ORDER BY id DESC LIMIT 3";
+					$result = mysqli_query($connection, $sql);
+					if($result){
+						if(mysqli_num_rows($result) == 0){
+							echo "<p>" .uilang("There is no post published"). ".</p>";
+						}else{
+							while($row = mysqli_fetch_assoc($result)){
+								$imagefile = $row["picture"];
+								if($imagefile == ""){
+									$imagefile = "images/filmbg.jpg";
+								}else{
+									$imagefile = "pictures/" . $imagefile;
+								}
+								?>
+								
+								<div class="firstthreeblock" style="background: url(<?php echo $baseurl . $imagefile ?>) no-repeat center center; background-size: cover; -webkit-background-size: cover; -moz-background-size: cover; -o-background-size: cover;">
+									<a href="?post=<?php echo $row["postid"] ?>">
+										<div style="display: table; width: 100%; height: 100%; background-color: rgba(0,0,0,.5); padding: 40px; box-sizing: border-box; border-radius: 5px;">
+											<div class="smallinmobile w75">
+												<h2><?php echo shorten_text($row["title"], 40, ' ...', true) ?></h2>
+												<p><?php echo shorten_text(strip_tags($row["content"]), 256, ' ...', false) ?></p>
+											</div>
+											<div class="smallinmobile w25" style="vertical-align: middle; text-align: center;">
+												<div class="morebutton"><?php echo uilang("MORE") ?> <i class="fa fa-chevron-right" style="width: 30px;"></i></div>
+											</div>
+										</div>
+									</a>
+								</div>
+								<?php
+							}
+						}
+					}
+					
 					?>
 				</div>
 			</div>
@@ -429,7 +482,7 @@ include("uilang.php");
 		?>
 		
 		<div id="cartbutton">
-			<div style="-webkit-box-shadow: 0px 0px 15px 0px rgba(0,0,0,0.35); -moz-box-shadow: 0px 0px 15px 0px rgba(0,0,0,0.35); box-shadow: 0px 0px 15px 0px rgba(0,0,0,0.35); width: 96px; height: 96px; border-radius: 50%; background-color: white; text-align: center; display: table-cell; vertical-align: middle; border: 2px solid <?php echo $maincolor ?>; position: relative;">
+			<div class="cartbuttoncircle" style="-webkit-box-shadow: 0px 0px 15px 0px rgba(0,0,0,0.35); -moz-box-shadow: 0px 0px 15px 0px rgba(0,0,0,0.35); box-shadow: 0px 0px 15px 0px rgba(0,0,0,0.35); border-radius: 50%; background-color: white; text-align: center; display: table-cell; vertical-align: middle; border: 2px solid <?php echo $maincolor ?>; position: relative;">
 				<div style="position: absolute; top: 0; text-align: center; font-size: 20px; left: 0; right: 0; padding: 5px; font-weight: bold;" id="cartcount"></div>
 				<i class="fa fa-shopping-cart" style="cursor: pointer;" onclick="showcartui()"></i>
 			</div>
@@ -679,6 +732,14 @@ include("uilang.php");
 			}catch(e){
 				console.log(e)
 			}
+			
+			$(document).ready(function(){
+                $('#firstthree').slick({
+                    autoplaySpeed: 3000,
+                    autoplay : true,
+                    infinite: true,
+                });
+            })
 		</script>
 	</body>
 </html>

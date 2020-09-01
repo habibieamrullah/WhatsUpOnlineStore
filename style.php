@@ -594,8 +594,38 @@
 		-webkit-backdrop-filter: blur(5px);
 	}
 	
+	.cartbuttoncircle{
+		width: 96px; height: 96px;
+	}
+	
 	/* mobile view */
 	@media (max-width: 800px){
+		
+		
+		
+		.cartbuttoncircle{
+			width: 64px; height: 64px;
+		}
+		
+		#cartbutton{
+			padding: 10px;
+			font-size: 20px;
+		}
+		
+		#header{
+			position: static;
+		}
+		
+		.productthumbnail{
+			width: 128px;
+			height: 128px;
+		}
+		
+		.filmblock{
+			width: 128px;
+			font-size: 12px;
+			margin: 2px;
+		}
 		
 		.inlinecenterblock{
 			display: block;
