@@ -286,19 +286,22 @@ include("uilang.php");
 										cartobject.push(currentitem)
 										updatecartcount()
 										savedata()
+										location.reload()
 									}else{
 										for(var i = 0; i < cartobject.length; i++){
 											if(cartobject[i].title == currentitem.title && cartobject[i].price == currentitem.price){
 												cartobject[i].quantity += currentitem.quantity
 												updatecartcount()
 												savedata()
-												return
+												location.reload()
+												//return
 											}
 										}
 										cartobject.push(currentitem)
 										updatecartcount()
 										savedata()
-										return
+										location.reload()
+										//return
 									}	
 
 								}
@@ -481,10 +484,10 @@ include("uilang.php");
 		
 		?>
 		
-		<div id="cartbutton">
+		<div id="cartbutton" onclick="showcartui()">
 			<div class="cartbuttoncircle" style="-webkit-box-shadow: 0px 0px 15px 0px rgba(0,0,0,0.35); -moz-box-shadow: 0px 0px 15px 0px rgba(0,0,0,0.35); box-shadow: 0px 0px 15px 0px rgba(0,0,0,0.35); border-radius: 50%; background-color: white; text-align: center; display: table-cell; vertical-align: middle; border: 2px solid <?php echo $maincolor ?>; position: relative;">
 				<div style="position: absolute; top: 0; text-align: center; font-size: 20px; left: 0; right: 0; padding: 5px; font-weight: bold;" id="cartcount"></div>
-				<i class="fa fa-shopping-cart" style="cursor: pointer;" onclick="showcartui()"></i>
+				<i class="fa fa-shopping-cart" style="cursor: pointer;"></i>
 			</div>
 		</div>
 		

@@ -598,9 +598,63 @@
 		width: 96px; height: 96px;
 	}
 	
+	.loginform{
+		padding: 100px; width: 400px; margin: 0 auto;
+	}
+	
+	.adminmenubar{
+		display: table-cell; width: 140px; background-color: black; color: white;
+	}
+	
+	.barsbutton{
+		display: none;
+	}
+	
+	.stickythingy{
+		position: -webkit-sticky; /* Safari */
+		position: sticky;
+		top: 0;
+	}
+	
 	/* mobile view */
 	@media (max-width: 800px){
+		#cartui{
+			padding: 10px;
+		}
 		
+		.buybutton{
+			margin: 5px;
+		}
+		
+		.barsbutton{
+			display: block;
+			position: fixed;
+			top: 0;
+			left: 0;
+			padding: 7px;
+			background-color: rgba(0,0,0,.75);
+			color: white;
+			z-index: 100;
+		}
+		
+		.adminmenubar{
+			display: none;
+			position: fixed;
+			top: 0;
+			left: 0;
+			bottom: 0;
+			z-index: 99;
+		}
+		
+		.stickythingy{
+			position: static;
+		}
+		
+		.loginform{
+			padding: 10px;
+			width: 100%;
+			box-sizing: border-box;
+		}
 		
 		
 		.cartbuttoncircle{

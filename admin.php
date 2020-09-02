@@ -56,11 +56,7 @@ include("uilang.php");
 				color: black;
 				transition: background-color .5s;
 			}
-			.stickythingy{
-				position: -webkit-sticky; /* Safari */
-				position: sticky;
-				top: 0;
-			}
+			
 			.bar{
 				background-color: <?php echo $maincolor ?>; 
 				display: block;
@@ -71,6 +67,7 @@ include("uilang.php");
 		</style>
 	</head>
 	<body>
+		<div class="barsbutton" onclick="toggleadminmenu()"><i class="fa fa-bars"></i></div>
 		<?php
 		//if admin logged in
 		if(isset($_SESSION["adminusername"]) && isset($_SESSION["adminpassword"])){
@@ -79,7 +76,7 @@ include("uilang.php");
 				
 				<div style="display: table; position: absolute; top: 0; bottom: 0; left: 0; right: 0; width: 100%; height: 100%;">
 					<div style="display: table-row; height: 100%;">
-						<div style="display: table-cell; width: 140px; background-color: black; color: white;">
+						<div class="adminmenubar">
 							<div class="stickythingy">
 								<div style="padding: 40px;">
 									<?php
@@ -942,7 +939,7 @@ include("uilang.php");
 			//show login form
 			else{
 				?>
-				<div style="padding: 100px; width: 400px; margin: 0 auto;">
+				<div class="loginform">
 					<div style="text-align: center; padding: 20px;">
 						<?php
 						$currentlogo = "images/logo.png";
@@ -977,6 +974,10 @@ include("uilang.php");
 			setTimeout(function(){
 				$(".alert").slideUp()
 			}, 2000)
+			
+			function toggleadminmenu(){
+				$(".adminmenubar").toggle()
+			}
 			
 		</script>
 	</body>
