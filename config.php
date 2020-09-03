@@ -20,7 +20,7 @@ $password = "admin";
 
 //Database connection
 $host = "localhost";
-$tableprefix = "whatsupolstore_"; //You can change this table prefix
+$tableprefix = "whatashop_"; //You can change this table prefix
 
 $databasename = "mydatabase";
 $dbuser = "root";
@@ -39,7 +39,7 @@ $tablemessages = $tableprefix . "messages";
 mysqli_query($connection, "CREATE TABLE IF NOT EXISTS $tableconfig (
 id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
 config VARCHAR(150) NOT NULL,
-value VARCHAR(1500) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL
+value TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL
 )");
 
 //Creating tables - posts
@@ -70,17 +70,26 @@ date VARCHAR(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
 message VARCHAR(300) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL
 )");
 
+//Make empty variables
+$websitetitle = "";
+
 //Default website config values
-$websitetitle = "WhatsUp Online Store";
-$maincolor = "#f28433";
-$secondcolor = "#ffb98a";
-$about = "<p>Just another cool online shop. Timing 7:00 AM to 9:00 PM. Free Delivery Within 10KM</p>";
+$cfg = new \stdClass();
+$cfg->websitetitle = "WhatAshop Online Store";
+$cfg->maincolor = "#f28433";
+$cfg->secondcolor = "#ffb98a";
+$cfg->about = "<p>Just another cool online shop. Timing 7:00 AM to 9:00 PM. Free Delivery Within 10KM</p>";
+$cfg->language = "en";
+$cfg->logo = "";
+$cfg->adminwhatsapp = "6287880334339";
+$cfg->currencysymbol = "$";
+
+//Base URL
 $baseurl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
-$language = "en";
-$logo = "";
-$adminwhatsapp = "6287880334339";
-$currencysymbol = "$";
-$baseurl = str_replace("index.php", "", $baseurl);
+$cfg->baseurl = str_replace("index.php", "", $baseurl);
+
+//ConfigJSON
+$JSONcfg = json_encode($cfg);
 
 //Generating default website config
 $sql = "SELECT * FROM $tableconfig";
@@ -89,48 +98,20 @@ $result = mysqli_query($connection, $sql);
 //Check if its blank
 if(mysqli_num_rows($result) == 0){
 	//Then generate default values
-	$sql = "INSERT INTO $tableconfig (config, value) VALUES ('websitetitle', '$websitetitle');";
-	$sql .= "INSERT INTO $tableconfig (config, value) VALUES ('maincolor', '$maincolor');";
-	$sql .= "INSERT INTO $tableconfig (config, value) VALUES ('secondcolor', '$secondcolor');";
-	$sql .= "INSERT INTO $tableconfig (config, value) VALUES ('about', '$about');";
-	$sql .= "INSERT INTO $tableconfig (config, value) VALUES ('language', '$language');";
-	$sql .= "INSERT INTO $tableconfig (config, value) VALUES ('adminwhatsapp', '$adminwhatsapp');";
-	$sql .= "INSERT INTO $tableconfig (config, value) VALUES ('logo', '$logo');";
-	$sql .= "INSERT INTO $tableconfig (config, value) VALUES ('currencysymbol', '$currencysymbol');";
-	$sql .= "INSERT INTO $tableconfig (config, value) VALUES ('baseurl', '$baseurl');";
-	mysqli_multi_query($connection, $sql);
+	mysqli_query($connection, $sql = "INSERT INTO $tableconfig (config, value) VALUES ('cfg', '$JSONcfg');");
 }else{
 	//Then load the website configurations
 	while($row = mysqli_fetch_assoc($result)){
-		switch($row["config"]){
-			case "websitetitle" :
-				$websitetitle = $row["value"];
-				break;
-			case "maincolor" :
-				$maincolor = $row["value"];
-				break;
-			case "secondcolor" :
-				$secondcolor = $row["value"];
-				break;
-			case "about" :
-				$about = $row["value"];
-				break;
-			case "language" :
-				$language = $row["value"];
-				break;
-			case "baseurl" :
-				$baseurl = $row["value"];
-				break;
-			case "adminwhatsapp" :
-				$adminwhatsapp = $row["value"];
-				break;
-			case "logo" :
-				$logo = $row["value"];
-				break;
-			case "currencysymbol" :
-				$currencysymbol = $row["value"];
-				break;
-		}
+		$cfg = json_decode($row["value"]);
+		$websitetitle = $cfg->websitetitle;
+		$maincolor = $cfg->maincolor;
+		$secondcolor = $cfg->secondcolor;
+		$about = $cfg->about;
+		$language = $cfg->language;
+		$logo = $cfg->logo;
+		$adminwhatsapp = $cfg->adminwhatsapp;
+		$currencysymbol = $cfg->currencysymbol;
+		$baseurl = $cfg->baseurl;
 	}
 }
 

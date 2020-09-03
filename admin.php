@@ -81,8 +81,9 @@ include("uilang.php");
 								<div style="padding: 40px;">
 									<?php
 									$currentlogo = "images/logo.png";
-									if($logo != "")
+									if($logo != ""){
 										$currentlogo = "pictures/" . $logo;
+									}
 									?>
 									<a href="<?php echo $baseurl ?>admin.php"><img src="<?php echo $currentlogo ?>" style="display: border-box; width: 100%;"></a>
 								</div>
@@ -369,23 +370,18 @@ include("uilang.php");
 								
 								if(isset($_POST["websitetitle"])){
 									
-									$websitetitle = mysqli_real_escape_string($connection, $_POST["websitetitle"]);
-									$maincolor = mysqli_real_escape_string($connection, $_POST["maincolor"]);
-									$secondcolor = mysqli_real_escape_string($connection, $_POST["secondcolor"]);
-									$about = mysqli_real_escape_string($connection, $_POST["about"]);
-									$adminwhatsapp = mysqli_real_escape_string($connection, $_POST["adminwhatsapp"]);
-									$language = mysqli_real_escape_string($connection, $_POST["language"]);
-									$currencysymbol = mysqli_real_escape_string($connection, $_POST["currencysymbol"]);
-									$baseurl = mysqli_real_escape_string($connection, $_POST["baseurl"]);
-									
-									mysqli_query($connection, "UPDATE $tableconfig SET value = '$websitetitle' WHERE config = 'websitetitle'");
-									mysqli_query($connection, "UPDATE $tableconfig SET value = '$maincolor' WHERE config = 'maincolor'");
-									mysqli_query($connection, "UPDATE $tableconfig SET value = '$secondcolor' WHERE config = 'secondcolor'");
-									mysqli_query($connection, "UPDATE $tableconfig SET value = '$about' WHERE config = 'about'");
-									mysqli_query($connection, "UPDATE $tableconfig SET value = '$adminwhatsapp' WHERE config = 'adminwhatsapp'");
-									mysqli_query($connection, "UPDATE $tableconfig SET value = '$language' WHERE config = 'language'");
-									mysqli_query($connection, "UPDATE $tableconfig SET value = '$currencysymbol' WHERE config = 'currencysymbol'");
-									mysqli_query($connection, "UPDATE $tableconfig SET value = '$baseurl' WHERE config = 'baseurl'");
+									$cfg = new \stdClass();
+									$cfg->websitetitle = mysqli_real_escape_string($connection, $_POST["websitetitle"]);
+									$cfg->maincolor = mysqli_real_escape_string($connection, $_POST["maincolor"]);
+									$cfg->secondcolor = mysqli_real_escape_string($connection, $_POST["secondcolor"]);
+									$cfg->about = mysqli_real_escape_string($connection, $_POST["about"]);
+									$cfg->language = mysqli_real_escape_string($connection, $_POST["language"]);
+									$cfg->logo = "";
+									$cfg->adminwhatsapp = mysqli_real_escape_string($connection, $_POST["adminwhatsapp"]);
+									$cfg->currencysymbol = mysqli_real_escape_string($connection, $_POST["currencysymbol"]);
+									$cfg->baseurl = mysqli_real_escape_string($connection, $_POST["baseurl"]);
+									$JSONcfg = json_encode($cfg);
+									mysqli_query($connection, "UPDATE $tableconfig SET value = '$JSONcfg' WHERE config = 'cfg'");
 									
 									//Favicon upload
 									if(isset($_FILES["favicon"])){
@@ -407,7 +403,7 @@ include("uilang.php");
 										}
 									}
 									
-									//Picture upload
+									//Logo upload
 									if(isset($_FILES["newpicture"])){
 										$maxsize = 524288;
 										if($_FILES["newpicture"]["size"] == 0){
@@ -427,122 +423,117 @@ include("uilang.php");
 													$result = move_uploaded_file($_FILES['newpicture']['tmp_name'], $name);
 												}
 												?>
+												
 												<div class="alert"><?php echo uilang("Logo upload is OK") ?>.</div>
 												<?php
 												$newpicture = $newpicture .".". $extension;
+												
+												if($logo != ""){
+													//delete previous media
+													if(file_exists("pictures/" . $logo)){
+														unlink("pictures/" . $logo);
+													}
+												}
+												
 												$logo = $newpicture;
-												mysqli_query($connection, "UPDATE $tableconfig SET value = '$logo' WHERE config = 'logo'");
+												
+												$sql = "SELECT * FROM $tableconfig WHERE config = 'cfg'";
+												$result = mysqli_query($connection, $sql);
+												$row = mysqli_fetch_assoc($result)["value"];
+												$cfg = json_decode($row);
+												
+												$cfg->logo = $logo;
+												$JSONcfg = json_encode($cfg);
+												
+												mysqli_query($connection, "UPDATE $tableconfig SET value = '$JSONcfg' WHERE config = 'cfg'");
 												
 											} else { echo "<div class='alert'>" .uilang("File is not valid. Please try again"). ".</div>"; }
 										}
 									}
-									
 									echo "<div class='alert'>" .uilang("Settings updated!"). "</div>";
 								}
+								
 								?>
 								<form method="post" enctype="multipart/form-data">
-								<?php
-								$sql = "SELECT * FROM $tableconfig";
-								$result = mysqli_query($connection, $sql);
-								while($row = mysqli_fetch_assoc($result)){
-									switch($row["config"]){
-										case "websitetitle" :
+								
+									<?php
+									
+									$sql = "SELECT * FROM $tableconfig WHERE config = 'cfg'";
+									$result = mysqli_query($connection, $sql);
+									
+									$row = mysqli_fetch_assoc($result)["value"];
+									$cfg = json_decode($row);
+									
+									?>
+									
+									<label><i class="fa fa-font"></i> <?php echo uilang("Website Title") ?></label>
+									<input placeholder="<?php echo uilang("Website Title") ?>" name="websitetitle" value="<?php echo $cfg->websitetitle ?>">
+									
+									<label><i class="fa fa-paint-brush"></i> <?php echo uilang("Main Color") ?></label>
+									<input placeholder="<?php echo uilang("Main Color") ?>" name="maincolor" value="<?php echo $cfg->maincolor ?>" data-jscolor="">
+									
+									<label><i class="fa fa-paint-brush"></i> <?php echo uilang("Secondary Color") ?></label>
+									<input placeholder="<?php echo uilang("Secondary Color") ?>" name="secondcolor" value="<?php echo $cfg->secondcolor ?>" data-jscolor="">
+									
+									<label><i class="fa fa-money"></i> <?php echo uilang("Currency Symbol") ?></label>
+									<input placeholder="<?php echo uilang("Currency Symbol") ?>" name="currencysymbol" value="<?php echo $cfg->currencysymbol ?>">
+												
+									<label><i class="fa fa-whatsapp"></i> <?php echo uilang("Admin WhatsApp Phone Number") ?></label>
+									<input placeholder="<?php echo uilang("Admin WhatsApp Phone Number") ?>" name="adminwhatsapp" value="<?php echo $cfg->adminwhatsapp ?>">
+									
+									<label><i class="fa fa-info"></i> <?php echo uilang("About") ?></label>
+									<textarea placeholder="<?php echo uilang("About") ?>" name="about"><?php echo $cfg->about ?></textarea>
+									<br>
+									
+									<label><i class="fa fa-language"></i> <?php echo uilang("Language") ?></label>
+									<select name="language">
+										<?php
+										if($cfg->language == "en"){
 											?>
-											<label><i class="fa fa-font"></i> <?php echo uilang("Website Title") ?></label>
-											<input placeholder="<?php echo uilang("Website Title") ?>" name="websitetitle" value="<?php echo $row["value"] ?>">
+											<option selected value="en">English</option>
+											<option value="id">Bahasa Indonesia</option>
 											<?php
-											break;
-										case "maincolor" :
+										}else if($cfg->language == "id"){
 											?>
-											<label><i class="fa fa-paint-brush"></i> <?php echo uilang("Main Color") ?></label>
-											<input placeholder="<?php echo uilang("Main Color") ?>" name="maincolor" value="<?php echo $row["value"] ?>" data-jscolor="">
+											<option value="en">English</option>
+											<option selected value="id">Bahasa Indonesia</option>
 											<?php
-											break;
-										case "secondcolor" :
-											?>
-											<label><i class="fa fa-paint-brush"></i> <?php echo uilang("Secondary Color") ?></label>
-											<input placeholder="<?php echo uilang("Secondary Color") ?>" name="secondcolor" value="<?php echo $row["value"] ?>" data-jscolor="">
-											<?php
-											break;
-										case "currencysymbol" :
-											?>
-											<label><i class="fa fa-money"></i> <?php echo uilang("Currency Symbol") ?></label>
-											<input placeholder="<?php echo uilang("Currency Symbol") ?>" name="currencysymbol" value="<?php echo $row["value"] ?>">
-											<?php
-											break;
-										case "adminwhatsapp" :
-											?>
-											<label><i class="fa fa-whatsapp"></i> <?php echo uilang("Admin WhatsApp Phone Number") ?></label>
-											<input placeholder="<?php echo uilang("Admin WhatsApp Phone Number") ?>" name="adminwhatsapp" value="<?php echo $row["value"] ?>">
-											<?php
-											break;
-										case "about" :
-											?>
-											<label><i class="fa fa-info"></i> <?php echo uilang("About") ?></label>
-											<textarea placeholder="<?php echo uilang("About") ?>" name="about"><?php echo $row["value"] ?></textarea>
-											<br>
-											<?php
-											break;
-										case "language" :
-											?>
-											<label><i class="fa fa-language"></i> <?php echo uilang("Language") ?></label>
-											<select name="language">
-												<?php
-												if($row["value"] == "en"){
-													?>
-													<option selected value="en">English</option>
-													<option value="id">Bahasa Indonesia</option>
-													<?php
-												}else if($row["value"] == "id"){
-													?>
-													<option value="en">English</option>
-													<option selected value="id">Bahasa Indonesia</option>
-													<?php
-												}
-												?>
-											</select>
-											<br>
-											<?php
-											break;
-										case "logo" :
-											?>
-											<label><i class="fa fa-check-circle"></i> Logo</label>
-											<?php
-											if($row["value"] == ""){
-												?>
-												<div style="display: inline-block; vertical-align: middle;">
-													<img src="images/logo.png" width="64">
-												</div>
-												<?php
-											}else{
-												?>
-												<div style="display: inline-block; text-align: center; vertical-align: middle;">
-													<img src="pictures/<?php echo $row["value"] ?>" width="64"><br>
-													<a href="<?php echo $baseurl ?>admin.php?settings&removelogo" class="textlink"><i class="fa fa-trash"></i> Remove</a>
-												</div>
-												<?php
-											}
-											?>
-											<input name="newpicture" type="file" name="logo" style="display: inline-block; width: 300px; vertical-align: middle;">
-											<br>
-											<?php
-											break;
-										case "baseurl" :
-											?>
-											<label><i class="fa fa-link"></i> <?php echo uilang("Base URL (make sure to include '/' symbol at the end)") ?></label>
-											<input placeholder="<?php echo uilang("Base URL") ?>" name="baseurl" value="<?php echo $row["value"] ?>">
-											<?php
-											break;
+										}
+										?>
+									</select>
+									<br>
+									
+									<label><i class="fa fa-check-circle"></i> Logo</label>
+									<?php
+									if($cfg->logo == ""){
+										?>
+										<div style="display: inline-block; vertical-align: middle;">
+											<img src="images/logo.png" width="64">
+										</div>
+										<?php
+									}else{
+										?>
+										<div style="display: inline-block; text-align: center; vertical-align: middle;">
+											<img src="pictures/<?php echo $cfg->logo ?>" width="64"><br>
+											<a href="<?php echo $baseurl ?>admin.php?settings&removelogo" class="textlink"><i class="fa fa-trash"></i> Remove</a>
+										</div>
+										<?php
 									}
-								}
-								?>
-								<label><i class="fa fa-globe"></i> <?php echo uilang("Website Icon (.ico file)") ?></label>
-								<input type="file" name="favicon">
-								<input class="submitbutton" type="submit" value="<?php echo uilang("Update") ?>">
+									?>
+									<input name="newpicture" type="file" name="logo" style="display: inline-block; width: 300px; vertical-align: middle;">
+									<br>
+									
+									<label><i class="fa fa-link"></i> <?php echo uilang("Base URL (make sure to include '/' symbol at the end)") ?></label>
+									<input placeholder="<?php echo uilang("Base URL") ?>" name="baseurl" value="<?php echo $cfg->baseurl ?>">
+												
+									<label><i class="fa fa-globe"></i> <?php echo uilang("Website Icon (.ico file)") ?></label>
+									<input type="file" name="favicon">
+									<input class="submitbutton" type="submit" value="<?php echo uilang("Update") ?>">
 								</form>
+								
 								<?php
+								
 							}
-							
 							//edit post
 							else if(isset($_GET["editpost"])){
 								

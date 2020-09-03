@@ -178,6 +178,7 @@
 		display: inline-block;
 		vertical-align: middle;
 		padding: 20px;
+		padding: 10px; padding-top: 15px; padding-left: 20px; padding-right: 0px;
 	}
 	
 	#header{
@@ -567,6 +568,7 @@
 	.floatright{
 		float: right;
 		margin-top: 10px;
+		margin-right: 10px;
 		width: 200px;
 	}
 	
@@ -616,8 +618,21 @@
 		top: 0;
 	}
 	
+	
+	
 	/* mobile view */
 	@media (max-width: 800px){
+		
+		.inlinecenterblock{
+			display: block;
+			text-align: center;
+			padding: 10px;
+			box-sizing: border-box;
+			width: 100%;
+			margin: 0px;
+		}
+		
+		
 		#cartui{
 			padding: 10px;
 		}
@@ -679,12 +694,6 @@
 			width: 128px;
 			font-size: 12px;
 			margin: 2px;
-		}
-		
-		.inlinecenterblock{
-			display: block;
-			text-align: center;
-			padding: 10px;
 		}
 		
 		.floatright{
