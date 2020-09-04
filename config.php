@@ -67,7 +67,7 @@ category VARCHAR(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL
 mysqli_query($connection, "CREATE TABLE IF NOT EXISTS $tablemessages (
 id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
 date VARCHAR(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-message VARCHAR(300) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL
+message VARCHAR(1300) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL
 )");
 
 //Make empty variables
@@ -110,7 +110,7 @@ if(mysqli_num_rows($result) == 0){
 		$language = $cfg->language;
 		$logo = $cfg->logo;
 		$adminwhatsapp = $cfg->adminwhatsapp;
-		$currencysymbol = $cfg->currencysymbol;
+		$currencysymbol = str_replace("u20b9", "₹", $cfg->currencysymbol);
 		$baseurl = $cfg->baseurl;
 	}
 }

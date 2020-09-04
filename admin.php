@@ -428,12 +428,14 @@ include("uilang.php");
 												<?php
 												$newpicture = $newpicture .".". $extension;
 												
+												/*
 												if($logo != ""){
 													//delete previous media
 													if(file_exists("pictures/" . $logo)){
 														unlink("pictures/" . $logo);
 													}
 												}
+												*/
 												
 												$logo = $newpicture;
 												
@@ -476,7 +478,7 @@ include("uilang.php");
 									<input placeholder="<?php echo uilang("Secondary Color") ?>" name="secondcolor" value="<?php echo $cfg->secondcolor ?>" data-jscolor="">
 									
 									<label><i class="fa fa-money"></i> <?php echo uilang("Currency Symbol") ?></label>
-									<input placeholder="<?php echo uilang("Currency Symbol") ?>" name="currencysymbol" value="<?php echo $cfg->currencysymbol ?>">
+									<input placeholder="<?php echo uilang("Currency Symbol") ?>" name="currencysymbol" value="<?php echo $currencysymbol ?>">
 												
 									<label><i class="fa fa-whatsapp"></i> <?php echo uilang("Admin WhatsApp Phone Number") ?></label>
 									<input placeholder="<?php echo uilang("Admin WhatsApp Phone Number") ?>" name="adminwhatsapp" value="<?php echo $cfg->adminwhatsapp ?>">
