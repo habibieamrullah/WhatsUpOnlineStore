@@ -20,7 +20,7 @@ $password = "admin";
 
 //Database connection
 $host = "localhost";
-$tableprefix = "whatashop_"; //You can change this table prefix
+$tableprefix = "whatsupolstore_"; //You can change this table prefix
 
 $databasename = "mydatabase";
 $dbuser = "root";
