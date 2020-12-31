@@ -109,9 +109,9 @@ include("uilang.php");
 										<label><i class="fa fa-edit"></i> <?php echo uilang("Title") ?></label>
 										<input name="newposttitle" placeholder="<?php echo uilang("Title") ?>">
 										<label><i class="fa fa-money"></i> <?php echo uilang("Price") ?></label>
-										<input type="number" name="newpostnormalprice" placeholder="<?php echo uilang("Price") ?>">
+										<input type="number" step="0.01" name="newpostnormalprice" placeholder="<?php echo uilang("Price") ?>">
 										<label><i class="fa fa-money"></i> <?php echo uilang("Discount Price") ?></label>
-										<input type="number" name="newpostdiscountprice" placeholder="<?php echo uilang("Discount Price") ?>">
+										<input type="number" step="0.01" name="newpostdiscountprice" placeholder="<?php echo uilang("Discount Price") ?>">
 										<label><i class="fa fa-tag"></i> <?php echo uilang("Category") ?></label>
 										<select name="catid">
 											<?php
@@ -376,7 +376,7 @@ include("uilang.php");
 									$cfg->secondcolor = mysqli_real_escape_string($connection, $_POST["secondcolor"]);
 									$cfg->about = mysqli_real_escape_string($connection, $_POST["about"]);
 									$cfg->language = mysqli_real_escape_string($connection, $_POST["language"]);
-									$cfg->logo = "";
+									$cfg->logo = $logo;
 									$cfg->adminwhatsapp = mysqli_real_escape_string($connection, $_POST["adminwhatsapp"]);
 									$cfg->currencysymbol = mysqli_real_escape_string($connection, $_POST["currencysymbol"]);
 									$cfg->baseurl = mysqli_real_escape_string($connection, $_POST["baseurl"]);
@@ -553,9 +553,9 @@ include("uilang.php");
 											<label><i class="fa fa-edit"></i> <?php echo uilang("Title") ?></label>
 											<input name="editposttitle" placeholder="<?php echo uilang("Title") ?>" value="<?php echo $row["title"] ?>">
 											<label><i class="fa fa-money"></i> <?php echo uilang("Price") ?></label>
-											<input type="number" name="editnormalprice" placeholder="<?php echo uilang("Price") ?>" value="<?php echo $row["normalprice"] ?>">
+											<input type="number" step="0.01" name="editnormalprice" placeholder="<?php echo uilang("Price") ?>" value="<?php echo $row["normalprice"] ?>">
 											<label><i class="fa fa-money"></i> <?php echo uilang("Discount Price") ?></label>
-											<input type="number" name="editdiscountprice" placeholder="<?php echo uilang("Discount Price") ?>" value="<?php echo $row["discountprice"] ?>">
+											<input type="number" step="0.01" name="editdiscountprice" placeholder="<?php echo uilang("Discount Price") ?>" value="<?php echo $row["discountprice"] ?>">
 											<label><i class="fa fa-tag"></i> <?php echo uilang("Category") ?></label>
 											
 											<select name="editcatid">

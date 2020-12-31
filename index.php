@@ -14,7 +14,7 @@ include("uilang.php");
 
 if($websitetitle == ""){
 	?>
-	Welcome! If you see this message again, it means you did not set up the configuration correctly in config.php file.
+	Welcome! Open this page once again. If you still see this message, it means you did not set up the configuration correctly in config.php file.
 	<?php
 }else{
 	
@@ -167,10 +167,10 @@ if($websitetitle == ""){
 										<div class="producthalfbox">
 											
 											<?php
-											$saleprice = $row["normalprice"];
+											$saleprice = number_format($row["normalprice"],2);
 											$oldprice = "";
 											if($row["discountprice"] != 0){
-												$saleprice = $row["discountprice"];
+												$saleprice = number_format($row["discountprice"],2);
 												$oldprice = "<span style='margin: 0px; margin-top: 20px; text-decoration: line-through; font-size: 20px; margin-right: 10px; color: gray;'>" . $currencysymbol . number_format($row["normalprice"],2) . "</span>";
 											}
 											?>
@@ -264,8 +264,8 @@ if($websitetitle == ""){
 									}
 									
 									function overridethisprice(){
-										currentprice = parseInt($("#productoptionsselect").val())
-										currentitem.price = parseInt($("#productoptionsselect").val())
+										currentprice = parseFloat($("#productoptionsselect").val())
+										currentitem.price = parseFloat($("#productoptionsselect").val())
 										currentitem.title = "<?php echo $row["title"] ?> - " + $("#productoptionsselect option:selected").text()
 										updateCurrentTotal()
 									}
@@ -281,7 +281,7 @@ if($websitetitle == ""){
 											currentTotal = currentQ * currentprice
 										}
 										
-										currentitem.quantity = parseInt(currentQ)
+										currentitem.quantity = parseFloat(currentQ)
 										$("#currenttotal").html("<?php echo $currencysymbol ?> " + tSep(currentTotal.toFixed(2)))
 									}
 									updateCurrentTotal()
@@ -338,10 +338,10 @@ if($websitetitle == ""){
 												$imagefile = "pictures/" . $imagefile;
 											}										
 
-											$saleprice = $row["normalprice"];
+											$saleprice = number_format($row["normalprice"],2);
 											$oldprice = "";
 											if($row["discountprice"] != 0){
-												$saleprice = $row["discountprice"];
+												$saleprice = number_format($row["discountprice"],2);
 												$oldprice = "<span style='margin: 0px; margin-top: 20px; text-decoration: line-through; font-size: 12px; margin-right: 10px; color: gray;'>" . $currencysymbol . number_format($row["normalprice"],2) . "</span>";
 											}
 											
@@ -467,15 +467,15 @@ if($websitetitle == ""){
 									<div>
 										
 										<?php
-										$saleprice = $row["normalprice"];
+										$saleprice = number_format($row["normalprice"],2);
 										$oldprice = "";
 										if($row["discountprice"] != 0){
-											$saleprice = $row["discountprice"];
+											$saleprice = number_format($row["discountprice"],2);
 											$oldprice = "<span style='margin: 0px; margin-top: 20px; text-decoration: line-through; font-size: 12px; margin-right: 10px; color: gray;'>" . $currencysymbol . number_format($row["normalprice"],2) . "</span>";
 										}
 										?>
 										
-										<h2 style="margin-top: 20px;" class="producttitle"><?php echo shorten_text($row["title"], 25, ' ...', false) ?></h2><div class="realproducttitle" style="display: none"><?php echo $row["title"] ?></div><div class="productoptions" style="display: none"><?php echo $row["options"] ?></div><div style="padding-bottom: 20px; font-size: 25px; font-weight: bold; color: <?php echo $maincolor ?>"><?php echo $oldprice . $currencysymbol . "<span class='thiscurrentpricedisplay'>" . number_format($saleprice) ?></span><span style="display: none;" class="thiscurrentprice"><?php echo $saleprice ?></span> <span style="font-size: 12px;">x</span> <input class="productquantity" type="number" value=1 min=1 style="vertical-align: middle; display: inline-block; width: 40px; padding: 2px; margin: 5px; border-radius: 0px;"></div>
+										<h2 style="margin-top: 20px;" class="producttitle"><?php echo shorten_text($row["title"], 25, ' ...', false) ?></h2><div class="realproducttitle" style="display: none"><?php echo $row["title"] ?></div><div class="productoptions" style="display: none"><?php echo $row["options"] ?></div><div style="padding-bottom: 20px; font-size: 25px; font-weight: bold; color: <?php echo $maincolor ?>"><?php echo $oldprice . $currencysymbol . "<span class='thiscurrentpricedisplay'>" . number_format($saleprice, 2) ?></span><span style="display: none;" class="thiscurrentprice"><?php echo $saleprice ?></span> <span style="font-size: 12px;">x</span> <input class="productquantity" type="number" value=1 min=1 style="vertical-align: middle; display: inline-block; width: 40px; padding: 2px; margin: 5px; border-radius: 0px;"></div>
 										<div class="morebutton" onclick="addtocart(<?php echo $productindex ?>)"><i class="fa fa-shopping-cart"></i> <?php echo uilang("Add to Cart") ?></div>
 										<div style="padding: 20px;"><a onclick="showmore(<?php echo $productindex ?>)" class="textlink whatsmorebutton" style="cursor: pointer; text-decoration: none;"><i class="fa fa-chevron-down"></i> <?php echo uilang("More") ?></a><div class="whatsmorecontent" style="display: none; padding: 5px; font-size: 12px;"><?php echo shorten_text(strip_tags($row["content"]), 50, " ...") ?><br><a class="textlink" href="<?php echo $baseurl ?>?post=<?php echo $row["postid"] ?>">Continue</a></div></div>
 									</div>
@@ -555,7 +555,7 @@ if($websitetitle == ""){
 								if(x == 0){
 									var selectedprice = poobject[0].options[x].price
 									$(".thiscurrentprice").eq(i).html(selectedprice)
-									selectedprice = parseInt(selectedprice)
+									selectedprice = parseFloat(selectedprice)
 									$(".thiscurrentpricedisplay").eq(i).html(tSep(selectedprice.toFixed(2)))
 								}
 								pocontents += "<option value=" +poobject[0].options[x].price + ">" +poobject[0].options[x].title+ "</option>"
@@ -574,7 +574,7 @@ if($websitetitle == ""){
 				function overrideprice(n){
 					var selectedprice = $(".currentproductoption"+n+" option:selected").val()
 					$(".thiscurrentprice").eq(n).html($(".currentproductoption"+n+" option:selected").val())
-					selectedprice = parseInt(selectedprice)
+					selectedprice = parseFloat(selectedprice)
 					$(".thiscurrentpricedisplay").eq(n).html(tSep(selectedprice.toFixed(2)))
 				}
 				
@@ -603,8 +603,8 @@ if($websitetitle == ""){
 					if(prodop != "")
 						prodop = " - " + prodop
 					var prodtitle = prod.find(".realproducttitle").text() + prodop
-					var prodprice = parseInt(prod.find(".thiscurrentprice").text())
-					var prodquantity = parseInt(prod.find(".productquantity").val())
+					var prodprice = parseFloat(prod.find(".thiscurrentprice").text())
+					var prodquantity = parseFloat(prod.find(".productquantity").val())
 					var prodimage = prod.find(".prodimage").eq(0).text()
 					
 					function pushit(){
@@ -661,7 +661,7 @@ if($websitetitle == ""){
 					var grandtotal = 0
 					for(var i = 0; i < cartobject.length; i++){
 						var tmpttl = cartobject[i].price * cartobject[i].quantity
-						cartdata += "<div style='margin-bottom: 20px;'><img src='<?php echo $baseurl ?>"+cartobject[i].image+"' style='display: inline-block; vertical-align: middle; max-width: 64px; border-radius: 10px;'> "+cartobject[i].title + " <?php echo $currencysymbol ?>" + tSep(parseInt(cartobject[i].price).toFixed(2)) + " x <input id='cartq"+i+"' onchange='modifycq("+i+")' class='productquantity' type='number' value=" + cartobject[i].quantity + " min=1 style='vertical-align: middle; display: inline-block; width: 40px; padding: 2px; margin: 5px; border-radius: 0px;'> = <?php echo $currencysymbol ?>" + tSep(tmpttl.toFixed(2)) + "</div>"
+						cartdata += "<div style='margin-bottom: 20px;'><img src='<?php echo $baseurl ?>"+cartobject[i].image+"' style='display: inline-block; vertical-align: middle; max-width: 64px; border-radius: 10px;'> "+cartobject[i].title + " <?php echo $currencysymbol ?>" + tSep(parseFloat(cartobject[i].price).toFixed(2)) + " x <input id='cartq"+i+"' onchange='modifycq("+i+")' class='productquantity' type='number' value=" + cartobject[i].quantity + " min=1 style='vertical-align: middle; display: inline-block; width: 40px; padding: 2px; margin: 5px; border-radius: 0px;'> = <?php echo $currencysymbol ?>" + tSep(tmpttl.toFixed(2)) + "</div>"
 						grandtotal += tmpttl
 						
 						ordermessage += "- " + cartobject[i].title + " x " + cartobject[i].quantity + " = " + tmpttl + "\n"
@@ -695,7 +695,7 @@ if($websitetitle == ""){
 				}
 				
 				function modifycq(n){
-					var newvalue = parseInt($("#cartq"+n).val())
+					var newvalue = parseFloat($("#cartq"+n).val())
 					cartobject[n].quantity = newvalue
 					showcartui()
 				}
