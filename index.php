@@ -664,10 +664,10 @@ if($websitetitle == ""){
 						cartdata += "<div style='margin-bottom: 20px;'><img src='<?php echo $baseurl ?>"+cartobject[i].image+"' style='display: inline-block; vertical-align: middle; max-width: 64px; border-radius: 10px;'> "+cartobject[i].title + " <?php echo $currencysymbol ?>" + tSep(parseFloat(cartobject[i].price).toFixed(2)) + " x <input id='cartq"+i+"' onchange='modifycq("+i+")' class='productquantity' type='number' value=" + cartobject[i].quantity + " min=1 style='vertical-align: middle; display: inline-block; width: 40px; padding: 2px; margin: 5px; border-radius: 0px;'> = <?php echo $currencysymbol ?>" + tSep(tmpttl.toFixed(2)) + "</div>"
 						grandtotal += tmpttl
 						
-						ordermessage += "- " + cartobject[i].title + " x " + cartobject[i].quantity + " = " + tmpttl + "\n"
+						ordermessage += "- " + cartobject[i].title + " x " + cartobject[i].quantity + " = <?php echo $currencysymbol ?> " + tmpttl + "\n"
 					}
 					
-					ordermessage += "<?php echo uilang("Total") ?> = " + grandtotal + "\n"
+					ordermessage += "<?php echo uilang("Total") ?> = <?php echo $currencysymbol ?> " grandtotal + "\n"
 					
 					cartdata += "<hr style='background-color: white;'><h1><?php echo uilang("Total") ?> = <?php echo $currencysymbol ?>" + tSep(grandtotal.toFixed(2)) + "</h1>"
 					cartdata += "<h3><?php echo uilang("Contact Information") ?></h3><label><?php echo uilang("Name") ?></label><input id='cdname' placeholder='<?php echo uilang("Name") ?>'>"
