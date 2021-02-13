@@ -667,7 +667,7 @@ if($websitetitle == ""){
 						ordermessage += "- " + cartobject[i].title + " x " + cartobject[i].quantity + " = <?php echo $currencysymbol ?> " + tmpttl + "\n"
 					}
 					
-					ordermessage += "<?php echo uilang("Total") ?> = <?php echo $currencysymbol ?> " grandtotal + "\n"
+					ordermessage += "<?php echo uilang("Total") ?> = <?php echo $currencysymbol ?> " + grandtotal + "\n"
 					
 					cartdata += "<hr style='background-color: white;'><h1><?php echo uilang("Total") ?> = <?php echo $currencysymbol ?>" + tSep(grandtotal.toFixed(2)) + "</h1>"
 					cartdata += "<h3><?php echo uilang("Contact Information") ?></h3><label><?php echo uilang("Name") ?></label><input id='cdname' placeholder='<?php echo uilang("Name") ?>'>"
