@@ -2,6 +2,8 @@
 
 ATTENTION : Please use this one instead: https://github.com/habibieamrullah/WhatsUpShop -> It has more improvements.
 
+About WhatsUpOnlineStore:
+
 Nice and simplified online store CMS based on PHP and MySQL
  
 This PHP software is a lightweight and simple CMS system that allows you to post products with pictures, description, pricing, quantity and options.
